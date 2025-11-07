@@ -1,33 +1,44 @@
 <template>
-  <!-- Camera Setup -->
-  <TresPerspectiveCamera :position="[7, 7, 7]" :look-at="[0, 0, 0]" />
+  <TresPerspectiveCamera :position="[500, 200, 300]" :look-at="[0, 0, 0]" />
 
-  <!-- The Donut -->
-  <TresMesh ref="donutRef" :position="[0, 2, 0]">
-    <TresTorusGeometry :args="[1, 0.4, 16, 32]" />
-    <TresMeshBasicMaterial color="#ff6b35" />
-  </TresMesh>
+  <TresAmbientLight :intensity="1.5" />
+  <TresDirectionalLight :position="[10, 10, 10]" :intensity="2" />
 
-  <!-- Visual Helpers -->
-  <TresAxesHelper />
-  <TresGridHelper />
+  <TresGroup v-if="modelLoaded">
+    <primitive :object="model" />
+  </TresGroup>
 </template>
 
-<script setup lang="ts">
+<script setup>
+import { ref, onMounted } from 'vue'
 import { useLoop } from '@tresjs/core'
-import { ref } from 'vue'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
+import islandModel from '../assets/model/island.glb'
 
-// Reference to our donut mesh for animation
-const donutRef = ref()
+const modelLoaded = ref(false)
 
-// Animation loop
+let model = null
+
+onMounted(() => {
+  const loader = new GLTFLoader()
+  loader.load(
+    islandModel,
+    (gltf) => {
+      model = gltf.scene
+      modelLoaded.value = true
+      console.log('Model loaded')
+    },
+    undefined,
+    (error) => {
+      console.error('Error loading GLB:', error)
+    }
+  )
+})
+
 const { onBeforeRender } = useLoop()
-
-onBeforeRender(({ elapsed }) => {
-  if (donutRef.value) {
-    // Rotate the donut on both X and Y axes
-    donutRef.value.rotation.x = elapsed * 0.5
-    donutRef.value.rotation.y = elapsed * 0.3
+onBeforeRender(() => {
+  if (model) {
+    model.rotation.y += 0.005
   }
 })
 </script>

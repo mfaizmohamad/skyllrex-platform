@@ -1,15 +1,9 @@
 <template>
   <Header />
   <Home />
-  <TresCanvas>
-    <FirstExperience />
-  </TresCanvas>
 </template>
 <script setup>
-import Header from './components/Header.vue'
-import Home from './pages/Home.vue'
-import { TresCanvas } from '@tresjs/core'
-import FirstExperience from './components/FIrstExperience.vue'
+import Header from './components/HeaderHome.vue'
+import Home from './pages/HomePage.vue'
 </script>
-
 <style scoped></style>
